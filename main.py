@@ -72,8 +72,9 @@ class WebViewCreator(QtGui.QDialog):
                     lista.append(datos)
 
             cont+=1
-        #Escribimos el registro en la excel
         for i in lista:
+            #Escribimos el registro en la excel
+            print str(i)
             excel.write_row(i)
          #Guardamos la excel
             excel.save()
