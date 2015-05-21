@@ -7,14 +7,10 @@
 from urllib2 import urlopen
 import urllib2
 from BeautifulSoup import BeautifulSoup
-import math
 from PyQt4.uic.uiparser import QtGui
-import pyExcelerator
-from PyQt4 import QtWebKit
 import sys
-import requests
 from Menu import *
-from excel import Excel
+import xlsxwriter
 
 
 
@@ -26,26 +22,21 @@ class WebViewCreator(QtGui.QDialog):
         QtCore.QObject.connect(self.ui.pushButton,QtCore.SIGNAL("clicked()"),self.getAllData)
 
     def getAllData(self):
+        cont2 = 1
         i=0
         cont =1
-        url = "http://www.paginasamarillas.es/search/alojamientos/all-ma/all-pr/all-is/all-ci/all-ba/all-pu/all-nc/hotel/all-ct/1?what=Hotel"
-        url =str(url)
-        soup2 = BeautifulSoup(urlopen(url))
-        totpag = soup2.find("span",{"class":"m-header--count"}).contents[0]
-        totpag = totpag.split("resultados")
-        result = float(totpag[0].strip())
-        #result = int(math.ceil(result/15))
-        result = int(3)
+        limite = 0
+        workbook = xlsxwriter.Workbook('listado.xlsx')
+        worksheet = workbook.add_worksheet()
+        limite = int(self.ui.lineEdit.text())
         lista=[]
-        while cont < 20:
+    #Bucle para repetir por cada Página
+        while cont < limite:
+            #Montamos la url
             uri ="http://www.paginasamarillas.es/search/alojamientos/all-ma/all-pr/all-is/all-ci/all-ba/all-pu/all-nc/hotel/all-ct/"+str(cont)+"?what=Hotel"
             uri = str(uri)
-            headers = { 'User-Agent' : 'Mozilla/5.0' }
-            html = urllib2.urlopen(urllib2.Request(uri, None, headers)).read()
-            if url != "":
-                header = ['Nombre', 'Telefono', 'Email']
-                excel = Excel()
-                excel.write_with_format(header, bold=True)
+            #Comprobamos
+            if uri != "":
                 soup = BeautifulSoup(urlopen(uri))
                 #Recogemos cada uno de los li que contengan estas clases
                 total = soup.findAll("li",{"class":["m-results-business m-results-business-advert","m-results-business"]})
@@ -69,15 +60,30 @@ class WebViewCreator(QtGui.QDialog):
                         fin= prueba[0].replace("%40","@")
                     #Creamos el registro
                     datos=[nombre,tlf,fin]
-                    lista.append(datos)
+                    if datos in lista:
+                        print "Duplicado"
+                        #Reinicializamos los datos
+                        nombre = ""
+                        tlf=""
+                        fin=""
+                        email=""
+                    else:
+                        lista.append(datos)
+                        #Reinicializamos los datos
+                        nombre = ""
+                        tlf=""
+                        fin=""
+                        email=""
 
             cont+=1
         for i in lista:
             #Escribimos el registro en la excel
-            print str(i)
-            excel.write_row(i)
+            worksheet.write('A'+str(cont2),i[0])
+            worksheet.write('B'+str(cont2),i[1])
+            worksheet.write('C'+str(cont2),i[2])
+            cont2+=1
          #Guardamos la excel
-            excel.save()
+        workbook.close()
 
 
 if __name__ == "__main__":
