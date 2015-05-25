@@ -26,8 +26,7 @@ class WebViewCreator(QtGui.QDialog):
         i=0
         cont =1
         limite = 0
-        workbook = xlsxwriter.Workbook('listado.xlsx')
-        worksheet = workbook.add_worksheet()
+
         limite = int(self.ui.lineEdit.text())
         lista=[]
     #Bucle para repetir por cada Página
@@ -76,14 +75,17 @@ class WebViewCreator(QtGui.QDialog):
                         email=""
 
             cont+=1
-        for i in lista:
-            #Escribimos el registro en la excel
-            worksheet.write('A'+str(cont2),i[0])
-            worksheet.write('B'+str(cont2),i[1])
-            worksheet.write('C'+str(cont2),i[2])
-            cont2+=1
-         #Guardamos la excel
-        workbook.close()
+        tot =0
+        pag = lista.length()/2000
+        while tot <= pag:
+            workbook = xlsxwriter.Workbook('listado'+pag+'.xlsx')
+            worksheet = workbook.add_worksheet()
+            for i in range(2000):
+                worksheet.write('A'+str(cont2),lista[i][0])
+                worksheet.write('B'+str(cont2),lista[i][1])
+                worksheet.write('C'+str(cont2),lista[i][2])
+                lista.pop(i)
+            workbook.close()
 
 
 if __name__ == "__main__":
