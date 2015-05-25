@@ -86,6 +86,7 @@ class WebViewCreator(QtGui.QDialog):
                 worksheet.write('C'+str(cont2),lista[i][2])
                 lista.pop(i)
             workbook.close()
+            tot +=1
 
 
 if __name__ == "__main__":
