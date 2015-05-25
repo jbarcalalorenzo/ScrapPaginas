@@ -21,9 +21,33 @@ class WebViewCreator(QtGui.QDialog):
         self.ui.setupUi(self)
         QtCore.QObject.connect(self.ui.pushButton,QtCore.SIGNAL("clicked()"),self.getAllData)
 
+    def WriteExcel(self,lista):
+        cont2 =0
+        tot =0
+        pag = len(lista)/2000
+        if len(lista) <= 2000:
+            workbook = xlsxwriter.Workbook('listado.xlsx')
+            worksheet = workbook.add_worksheet()
+            for i in lista:
+                worksheet.write('A'+str(cont2),i[0])
+                worksheet.write('B'+str(cont2),i[1])
+                worksheet.write('C'+str(cont2),i[2])
+                cont2+=1
+            workbook.close()
+        else:
+            while tot <= pag:
+                workbook = xlsxwriter.Workbook('listado'+str(tot)+'.xlsx')
+                worksheet = workbook.add_worksheet()
+                for i in range(2000):
+                    worksheet.write('A'+str(cont2),lista[i][0])
+                    worksheet.write('B'+str(cont2),lista[i][1])
+                    worksheet.write('C'+str(cont2),lista[i][2])
+                    cont2+=1
+                    del lista[i]
+                workbook.close()
+                tot +=1
     def getAllData(self):
         cont2 = 1
-        i=0
         cont =1
         limite = 0
 
@@ -68,25 +92,14 @@ class WebViewCreator(QtGui.QDialog):
                         email=""
                     else:
                         lista.append(datos)
-                        #Reinicializamos los datos
+                         #Reinicializamos los datos
                         nombre = ""
                         tlf=""
                         fin=""
                         email=""
 
             cont+=1
-        tot =0
-        pag = lista.length()/2000
-        while tot <= pag:
-            workbook = xlsxwriter.Workbook('listado'+pag+'.xlsx')
-            worksheet = workbook.add_worksheet()
-            for i in range(2000):
-                worksheet.write('A'+str(cont2),lista[i][0])
-                worksheet.write('B'+str(cont2),lista[i][1])
-                worksheet.write('C'+str(cont2),lista[i][2])
-                lista.pop(i)
-            workbook.close()
-            tot +=1
+        self.WriteExcel(lista)
 
 
 if __name__ == "__main__":
