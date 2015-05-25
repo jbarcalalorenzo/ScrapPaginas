@@ -20,10 +20,10 @@ class WebViewCreator(QtGui.QDialog):
         self.ui =Ui_Dialog()
         self.ui.setupUi(self)
         QtCore.QObject.connect(self.ui.pushButton,QtCore.SIGNAL("clicked()"),self.getAllData)
-
     def WriteExcel(self,lista):
         cont2 =0
         tot =0
+        lim = 2000
         pag = len(lista)/2000
         if len(lista) <= 2000:
             workbook = xlsxwriter.Workbook('listado.xlsx')
@@ -36,14 +36,16 @@ class WebViewCreator(QtGui.QDialog):
             workbook.close()
         else:
             while tot <= pag:
+                cont2 =0
                 workbook = xlsxwriter.Workbook('listado'+str(tot)+'.xlsx')
                 worksheet = workbook.add_worksheet()
-                for i in range(2000):
-                    worksheet.write('A'+str(cont2),lista[i][0])
-                    worksheet.write('B'+str(cont2),lista[i][1])
-                    worksheet.write('C'+str(cont2),lista[i][2])
+                listatemp = lista[0:2000]
+                for i in listatemp:
+                    worksheet.write('A'+str(cont2),i[0])
+                    worksheet.write('B'+str(cont2),i[1])
+                    worksheet.write('C'+str(cont2),i[2])
                     cont2+=1
-                    del lista[i]
+                del lista[0:2000]
                 workbook.close()
                 tot +=1
     def getAllData(self):
